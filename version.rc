@@ -1,0 +1,41 @@
+
+#if defined(UNDER_CE)
+#include <winbase.h>
+#else
+#include <winver.h>
+#endif
+
+QT_VERSION_INFO VERSIONINFO
+    FILEVERSION 1,0,0,10
+    PRODUCTVERSION 1,0,0,10
+    FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+    FILEFLAGS VS_FF_DEBUG
+#else
+    FILEFLAGS 0x0L
+#endif
+    FILEOS VOS__WINDOWS32
+    FILETYPE VFT_DLL
+    FILESUBTYPE 0x0L
+    BEGIN
+        BLOCK "StringFileInfo"
+        BEGIN
+            BLOCK "080404b0"
+            BEGIN
+                VALUE "CompanyName", "命燃芯乂 独立开发者\0"
+                VALUE "FileDescription", "写作天下\0"
+                VALUE "FileVersion", "0.6.2\0"
+                VALUE "ProductVersion", "0.6.2\0"
+                VALUE "LegalCopyright", "版权所有 (C) 命燃芯乂\0"
+                VALUE "LegalTrademarks", "命燃芯乂\0"
+                VALUE "OriginalFilename", "WriterFly.exe\0"
+                VALUE "ProductName", "写作天下\0"
+                VALUE "InternalName", "WriterFly.exe\0"
+           END
+        END
+        
+        BLOCK "VarFileInfo"
+        BEGIN
+            VALUE "Translation", 0x804, 1200
+        END        
+    END

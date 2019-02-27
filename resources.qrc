@@ -1,0 +1,41 @@
+<RCC>
+    <qresource prefix="/documents"/>
+    <qresource prefix="/images"/>
+    <qresource prefix="/lexicons"/>
+    <qresource prefix="/icons">
+        <file alias="arrow_down">resources/icons/arrow_down.png</file>
+        <file alias="settings">resources/icons/settings.png</file>
+        <file alias="sidebar">resources/icons/sidebar.png</file>
+        <file alias="sidebar_back">resources/icons/sidebar_back.png</file>
+        <file alias="sure">resources/icons/sure.png</file>
+        <file alias="win_close">resources/icons/win_close.png</file>
+        <file alias="win_max">resources/icons/win_max.png</file>
+        <file alias="win_min">resources/icons/win_min.png</file>
+        <file alias="win_restore">resources/icons/win_restore.png</file>
+        <file alias="arrow_down_m">resources/icons/arrow_down_m.png</file>
+        <file alias="arrow_down_s">resources/icons/arrow_down_s.png</file>
+        <file alias="rbc">resources/icons/RBC.png</file>
+        <file alias="appicon">resources/icons/appicon.png</file>
+        <file alias="book">resources/icons/book.png</file>
+        <file alias="operator">resources/icons/operator.png</file>
+        <file alias="delete">resources/icons/delete_water.png</file>
+        <file alias="export">resources/icons/export.png</file>
+        <file alias="import">resources/icons/import.png</file>
+        <file alias="recycle">resources/icons/recycle_bowknot.png</file>
+        <file alias="mzfy">resources/icons/mzfy_icon.png</file>
+        <file alias="modify">resources/icons/modify.png</file>
+        <file alias="search_book">resources/icons/search_book.png</file>
+        <file alias="duplicate">resources/icons/duplicate.png</file>
+    </qresource>
+    <qresource prefix="/default">
+        <file alias="dir">resources/defaults/def_dir.txt</file>
+    </qresource>
+    <qresource prefix="/icons/setting">
+        <file alias="appearance">resources/icons/settings/appearance.png</file>
+        <file alias="feature">resources/icons/settings/feature.png</file>
+        <file alias="lexicon">resources/icons/settings/lexicon.png</file>
+        <file alias="interaction">resources/icons/settings/interaction.png</file>
+        <file alias="typeset">resources/icons/settings/typeset.png</file>
+    </qresource>
+    <qresource prefix="/style"/>
+</RCC>

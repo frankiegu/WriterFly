@@ -1,0 +1,10 @@
+QPushButton
+{
+	background-color: rgb(220, 220, 220);
+	border: none;
+}
+
+QPushButton:Hover
+{
+	background-color: rgb(200, 200, 200);
+}

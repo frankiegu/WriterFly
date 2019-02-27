@@ -1,0 +1,11 @@
+文件名固定，里面内容都能自己改
+如果要生效，则把默认文件名末尾的“0”去掉
+例如：scrollbar0.qss 改成 scrollbar.qss
+目前只支持先下方清单里面的，后续可能会增加
+还有主题功能，总有一天会有哒
+
+支持的自定义清单：
+滚动条		scrollbar.qss
+标题栏		titlebar.qss
+标题按钮	titlebar_button.qss
+编辑框		edit.qss
