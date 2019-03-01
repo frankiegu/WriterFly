@@ -105,6 +105,22 @@ void NovelDirListView::readNovel(QString novelName)
     this->novel_name = novelName;
     novel_dir_delegate->readSettings(novelName);
     novel_dir_model->readDir(novelName);
+
+    int roll_count = novel_dir_model->getRollCount();
+
+    if (novel_dir_model->getRollCount() == 2) // 只有两个，必定是有一个正文
+    {
+        int index = novel_dir_model->getListIndexByRoll(1);
+        this->setCurrentIndex(novel_dir_model->index(index, 0));
+    }
+    else if (novel_dir_model->getRollCount() == 1) // 只有作品相关
+    {
+        this->setCurrentIndex(novel_dir_model->index(0, 0));
+    }
+    else // 聚焦到最后一章
+    {
+        // 算了，随缘吧……
+    }
 }
 
 void NovelDirListView::initMenu()

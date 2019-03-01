@@ -164,10 +164,13 @@ void NovelEditor::updateUI()
     // 如果开启了输入动画，则要重新设置一下所有的文字颜色
     if (us->input_animation)
     {
+        int ori_position = this->textCursor().position();
+        this->selectAll();
         QTextCursor tc = this->textCursor();
         QTextCharFormat fm = tc.charFormat();
         fm.setForeground(QBrush(us->editor_font_color));
         tc.setCharFormat(fm);
+        tc.setPosition(ori_position);
         this->setTextCursor(tc);
     }
 
