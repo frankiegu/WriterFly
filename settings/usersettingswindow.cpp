@@ -144,7 +144,7 @@ void UserSettingsWindow::initItems()
     addItems("open_recent", "启动时打开最近一章", "", "自动聚焦到上次编辑的位置", us->open_recent);
     addItems("open_chapter_animation", "打开章节动画", "点击目录打开新章的缩放效果", "偷偷告诉你，这是傻开发者的动画强迫症", us->open_chapter_animation);
     addItems("cursor_animation", "光标移动动画", "", "", us->cursor_animation);
-    addItems("input_animation", "文字输入动画（试验）", "待完善，可能会出现全屏空白等bug", "后续可能支持多种动画效果", us->input_animation);
+    addItems("input_animation", "文字输入动画（试验）", "可能会出现文字颜色的bug", "后续可能支持多种动画效果", us->input_animation);
     addItems("save_power", "强力保存", "实时保存，安全稳定（尽量别关）", "别关别关别关别关别关别关别关!\n好吧……关不关随你……记得 ctrl+s 保存", us->save_power);
     hideItem();
     //addItems("save_interval", "定时保存间隔[不需要]", "单位：分钟", "", us->save_interval);

@@ -161,6 +161,16 @@ void NovelEditor::updateUI()
     palette.setColor(QPalette::Highlight, us->editor_bg_selection);
     this->setPalette(palette);
 
+    // 如果开启了输入动画，则要重新设置一下所有的文字颜色
+    if (us->input_animation)
+    {
+        QTextCursor tc = this->textCursor();
+        QTextCharFormat fm = tc.charFormat();
+        fm.setForeground(QBrush(us->editor_font_color));
+        tc.setCharFormat(fm);
+        this->setTextCursor(tc);
+    }
+
     // 设置自动提示的颜色 completer
     QPalette palette2 = completer_listview->palette();
     if (us->editor_font_color.alpha() > 0)

@@ -162,7 +162,9 @@ DISTFILES += \
     android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew.bat \
     docs/README.md \
-    docs/UPDATE.md
+    docs/UPDATE.md \
+    README.md \
+    UPDATE.md
 
 RESOURCES += \
     resources.qrc
