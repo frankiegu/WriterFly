@@ -823,7 +823,7 @@ void NovelEditor::keyPressEvent(QKeyEvent *event)
         }
         break;
     case Qt::Key_Backspace : // 16777219
-        if (textCursor().hasSelection()) break;
+        if (textCursor().hasSelection() || shift) break;
         if (us->smart_backspace) {
             if (ctrl && !alt)
                 backspaceWord(textCursor().position());
@@ -853,7 +853,7 @@ void NovelEditor::keyPressEvent(QKeyEvent *event)
         }
         break;
     case Qt::Key_Delete : // 向右删除
-        if (textCursor().hasSelection()) break;
+        if (textCursor().hasSelection() || shift) break;
         if (us->smart_backspace) {
             if (ctrl && !alt)
             {
