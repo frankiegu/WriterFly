@@ -77,7 +77,7 @@ void MainWindow::refreshAppPath()
     us->setVal("runtime/APP_PATH", rt->APP_PATH);
 
     // 修改 Friso 的属性
-    QString friso_ini = readTextFile(rt->APP_PATH+"tools/friso/friso.ini");
+    QString friso_ini = readTextFile(rt->APP_PATH+"tools/friso/friso.ini", "GBK");
     if (!friso_ini.isEmpty())
     {
         int start_pos = friso_ini.indexOf("friso.lex_dir");
@@ -89,18 +89,14 @@ void MainWindow::refreshAppPath()
         int end_pos = friso_ini.indexOf("\n", start_pos);
         if (end_pos == -1)
             end_pos = friso_ini.length();
-        end_pos = friso_ini.lastIndexOf("tools/friso/dict/UTF-8/", end_pos);
-        if (end_pos == -1)
-            return ;
-        QString friso_path = rt->APP_PATH;
+        QString friso_path = rt->APP_PATH+"tools/friso/dict/UTF-8/";
         friso_ini = friso_ini.left(start_pos) + friso_path + friso_ini.right(friso_ini.length() - end_pos);
-        writeTextFile(rt->APP_PATH+"tools/friso/friso.ini", friso_ini, "UTF-8");
+        writeTextFile(rt->APP_PATH+"tools/friso/friso.ini", friso_ini, "GBK");
     }
     else
     {
-        qDebug() << "无法读取Friso分词配置文件【" + rt->APP_PATH+"tools/friso/frisi.ini" + "】";
+        QMessageBox::information(this, "提示", "无法读取Friso分词配置文件【" + rt->APP_PATH+"tools/friso/frisi.ini" + "】\n可能无法使用分词相关的功能");
     }
-
 }
 
 void MainWindow::slotHasNewVersion(QString version, QString url)

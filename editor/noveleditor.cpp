@@ -494,9 +494,12 @@ void NovelEditor::slotOnCompleterActived(const QString &completion)
 {
     if ( lexicon_AI->getMatchedCase() == COMPLETER_CONTENT_SENT )//completer_case == COMPLETER_CONTENT_SENT)
     {
-        QClipboard *clipboard = QApplication::clipboard();   //获取系统剪贴板指针
-        clipboard->setText(completion);		             //设置剪贴板内容</span>
-        return ;
+        if (!us->insert_sentence)
+        {
+            QClipboard *clipboard = QApplication::clipboard();   //获取系统剪贴板指针
+            clipboard->setText(completion);		             //设置剪贴板内容</span>
+            return ;
+        }
     }
 
 
