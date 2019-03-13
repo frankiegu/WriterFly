@@ -40,23 +40,23 @@ public:
     void activeShrinkSelection();
 
     // 自身 AI 函数
-    void advanceBackspace();
-    void advanceDelete();
-    void Typeset();
-    void TypesetPaste(int x, QString text);
-    void TypesetPart(int start, int end);
+    void operatorTypeset();
+    void operatorTypesetPaste(int x, QString text);
+    void operatorTypesetPart(int start, int end);
     bool activeParaSplit(int x);
-    void activeWordReplace(int start, int end, QString word);
-    void ExpandSelection(int start, int end, int &callback_start, int &callback_end);
-    void ShrinkSelection(int start, int end, int &callback_start, int &callback_end);
-    bool activeTabComplete();
-    void activeTabSkip(int has_changed);
-    void activeReverseTabSkip();
+    bool operatorParaSplit(int x, bool indent);
+    void operatorSmartDelete();
+    void operatorWordReplace(int start, int end, QString word);
+    void operatorExpandSelection(int start, int end, int &callback_start, int &callback_end);
+    void operatorShrinkSelection(int start, int end, int &callback_start, int &callback_end);
+    bool operatorTabComplete();
+    void operatorTabSkip(int has_changed);
+    void operatorReverseTabSkip();
     bool activeHomonymCover();
-    bool HomonymCover(int end_pos, int diff);
-    bool PuncCover();      // 标点覆盖：输入特定标点触发
-    bool PairMatch();      // 括号匹配：左半符号自动触发
-    bool PairJump();       // 括号跳转：右半括号跳转到右边
+    bool operatorHomonymCover(int end_pos, int diff);
+    bool operatorPuncCover();      // 标点覆盖：输入特定标点触发
+    bool operatorPairMatch();      // 括号匹配：左半符号自动触发
+    bool operatorPairJump();       // 括号跳转：右半括号跳转到右边
 
     // 获取文本与光标事件
     int     getPreWordPos(int pos);                               // 上一个单词的位置

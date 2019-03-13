@@ -13,21 +13,20 @@ public:
     virtual ~NovelAIBase() = 0;
 
 protected:
-    void SmartSpace();     // 智能空格：按下空格触发
-    void SmartEnter();     // 智能回车：按下回车触发
-    void SmartQuotes();    // 智能引号：按下引号触发
-    void SmartBackspace(); // 智能删除，按下删除触发
-    bool AutoPunc();       // 自动标点：语气词自动触发
-    bool SentFinish();     // 句末标点：增加或转化成结尾
-    void SmartQuotes2(int left, int right); // 智能引号，仅在选中文本的情况下调用
-    bool paraSplit(int x, bool indent);
+    void operatorSmartSpace();     // 智能空格：按下空格触发
+    void operatorSmartEnter();     // 智能回车：按下回车触发
+    void operatorSmartQuotes();    // 智能引号：按下引号触发
+    void operatorSmartBackspace(); // 智能删除，按下删除触发
+    bool operatorAutoPunc();       // 自动标点：语气词自动触发
+    bool operatorSentFinish();     // 句末标点：增加或转化成结尾
+    void operatorSmartQuotes2(int left, int right); // 智能引号，仅在选中文本的情况下调用
     virtual int getWordCount(QString str);  // 字数统计，交给 NovelAI
 
     QString getPunc(QString para/*段落*/, int pos/*光标*/);  // ☆核心：取标点(句子)
-    QString getPunc(/*QString fullText, int pos*/);  // 这个是全部文本中的某一部分
-    QString getPunc(int pos); // 全部文本，特定位置的标点
+    QString getPunc(/*QString fullText, int pos*/);         // 这个是全部文本中的某一部分
+    QString getPunc(int pos);  // 全部文本，特定位置的标点
     QString getPunc2(int pos); // 把"，"改成"。"
-    QString getPunc2(); // 把"，"改成"。"
+    QString getPunc2();        // 把"，"改成"。"
     int     getDescTone(QString sent); // 句子语气标点，影响语气导向
     QString getTalkTone(QString sent, QString sent2, int tone, QString left1, QString left2);
 

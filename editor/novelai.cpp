@@ -50,35 +50,35 @@ bool NovelAI::isMove()
 void NovelAI::activeSmartQuotes()
 {
     prepareAnalyze();
-    SmartQuotes();
+    operatorSmartQuotes();
     finishAnalyze();
 }
 
 void NovelAI::activeSmartQuotes2()
 {
     prepareAnalyze();
-    SmartQuotes2(_text_cursor.selectionStart(), _text_cursor.selectionEnd());
+    operatorSmartQuotes2(_text_cursor.selectionStart(), _text_cursor.selectionEnd());
     finishAnalyze();
 }
 
 void NovelAI::activeSmartSpace()
 {
     prepareAnalyze();
-    SmartSpace();
+    operatorSmartSpace();
     finishAnalyze();
 }
 
 void NovelAI::activeSmartEnter()
 {
     prepareAnalyze();
-    SmartEnter();
+    operatorSmartEnter();
     finishAnalyze();
 }
 
 void NovelAI::activeSmartBackspace()
 {
     prepareAnalyze();
-    SmartBackspace();
+    operatorSmartBackspace();
     finishAnalyze();
 }
 
@@ -133,7 +133,7 @@ void NovelAI::activeNormalEnter()
     finishAnalyze();
 }
 
-bool NovelAI::activeTabComplete()
+bool NovelAI::operatorTabComplete()
 {
     int changed = false;
     prepareAnalyze();
@@ -145,12 +145,12 @@ bool NovelAI::activeTabComplete()
     if (isSymPairLeft(_right1)) // |《成对》
         return false;
 
-    changed = SentFinish();
+    changed = operatorSentFinish();
     finishAnalyze();
     return changed;
 }
 
-void NovelAI::activeTabSkip(int has_changed)
+void NovelAI::operatorTabSkip(int has_changed)
 {
     int len = _text.length();
     _pos = _edit->textCursor().position(); // 因为没有 prepareAnalyze()，所以光标位置不确定啊……
@@ -346,7 +346,7 @@ void NovelAI::activeTabSkip(int has_changed)
     return moveCursorFinished(pos);
 }
 
-void NovelAI::activeReverseTabSkip()
+void NovelAI::operatorReverseTabSkip()
 {
     int len = _text.length();
     _pos = _edit->textCursor().position(); // 因为没有 prepareAnalyze()，所以光标位置不确定啊……
@@ -1033,14 +1033,14 @@ QString NovelAI::getPara(QString text, int pos, int &start, int &end)
 void NovelAI::activeSentFinish()
 {
     prepareAnalyze();
-    SentFinish();
+    operatorSentFinish();
     finishAnalyze();
 }
 
 void NovelAI::activeExpandSelection()
 {
     int start = -1, end = -1;
-    ExpandSelection(_edit->textCursor().selectionStart(), _edit->textCursor().selectionEnd(), start, end);
+    operatorExpandSelection(_edit->textCursor().selectionStart(), _edit->textCursor().selectionEnd(), start, end);
     if (start == end || start== -1 || end == -1) return ; // 没有选择
 
     QTextCursor tc = _edit->textCursor();
@@ -1052,15 +1052,24 @@ void NovelAI::activeExpandSelection()
 void NovelAI::activeShrinkSelection()
 {
     int start = -1, end = -1;
-    ShrinkSelection(_edit->textCursor().selectionStart(), _edit->textCursor().selectionEnd(), start, end);
+    operatorShrinkSelection(_edit->textCursor().selectionStart(), _edit->textCursor().selectionEnd(), start, end);
     if (start == 0 && end == _text.length()) // 如果回退一次还是全选，则再次回退
-        ShrinkSelection(_edit->textCursor().selectionStart(), _edit->textCursor().selectionEnd(), start, end);
+        operatorShrinkSelection(_edit->textCursor().selectionStart(), _edit->textCursor().selectionEnd(), start, end);
     if (start == end || start== -1 || end == -1) return ; // 没有选择
 
     QTextCursor tc = _edit->textCursor();
     tc.setPosition(start, QTextCursor::MoveAnchor);
     tc.setPosition(end, QTextCursor::KeepAnchor);
     _edit->setTextCursor(tc);
+}
+
+void NovelAI::operatorSmartDelete()
+{
+    prepareAnalyze();
+
+
+
+    finishAnalyze();
 }
 
 bool NovelAI::activeHomonymCover()
@@ -1070,12 +1079,12 @@ bool NovelAI::activeHomonymCover()
     if (_pre_changed_pos != current_pos)
         return false;
 
-    bool result = HomonymCover(_pos, _dif);
+    bool result = operatorHomonymCover(_pos, _dif);
     finishAnalyze();
     return result;
 }
 
-bool NovelAI::HomonymCover(int end_pos, int diff)
+bool NovelAI::operatorHomonymCover(int end_pos, int diff)
 {
     if (diff > 5) return false;
     if (end_pos < diff * 2) return false;
@@ -1134,7 +1143,7 @@ bool NovelAI::HomonymCover(int end_pos, int diff)
  * 标点覆盖标点，不判断特定标点之外的内容
  * @return 是否覆盖标点
  */
-bool NovelAI::PuncCover()
+bool NovelAI::operatorPuncCover()
 {
     if (isChinese(_left1) || isChinese(_left2)) return false; // 中文
     if (_left1 != "，" && !isSentPunc(_left1)) return false; // 左1 不是句末标点
@@ -1156,7 +1165,7 @@ bool NovelAI::PuncCover()
  * 括号匹配：输入左半括号，自动补全右半括号
  * @return 是否补全
  */
-bool NovelAI::PairMatch()
+bool NovelAI::operatorPairMatch()
 {
     if (_right1 != "" && _right1 != "\n" && _right1 != "”" && _right1 != "　" && _right1 != " ") return false; // 只有空白处才自动添加
 
@@ -1207,7 +1216,7 @@ bool NovelAI::PairMatch()
  * 括号跳转：在右半括号中输入同样的括号，如果多余则调到右边
  * @return 是否括号跳转
  */
-bool NovelAI::PairJump()
+bool NovelAI::operatorPairJump()
 {
     if (isBlankChar(_left1) || isChinese(_left1) || _left1 != _right1) return false; // 空白符、中文、右边两个字符不一样
     /*if (_symbol_pair_rights.indexOf(_left1) == -1) return false; // 不是右括号
@@ -1253,25 +1262,7 @@ bool NovelAI::PairJump()
     }
 }
 
-void NovelAI::advanceBackspace()
-{
-    prepareAnalyze();
-
-    ;
-
-    finishAnalyze();
-}
-
-void NovelAI::advanceDelete()
-{
-    prepareAnalyze();
-
-    ;
-
-    finishAnalyze();
-}
-
-void NovelAI::Typeset()
+void NovelAI::operatorTypeset()
 {
     prepareAnalyze();
 
@@ -1352,7 +1343,7 @@ void NovelAI::Typeset()
         {
             if (pos - prev_pos > para_max)
             {
-                paraSplit(pos, false);
+                operatorParaSplit(pos, false);
             }
             prev_pos = pos;
         }
@@ -1510,7 +1501,7 @@ void NovelAI::Typeset()
  * @param x    粘贴位置
  * @param text 粘贴的原文本
  */
-void NovelAI::TypesetPaste(int x, QString text)
+void NovelAI::operatorTypesetPaste(int x, QString text)
 {
     prepareAnalyze();
 
@@ -1520,7 +1511,7 @@ void NovelAI::TypesetPaste(int x, QString text)
     finishAnalyze();
 }
 
-void NovelAI::TypesetPart(int start_pos, int end_pos)
+void NovelAI::operatorTypesetPart(int start_pos, int end_pos)
 {
     QString origin_text = _text; // 保存原来的文本
 
@@ -1575,7 +1566,7 @@ void NovelAI::TypesetPart(int start_pos, int end_pos)
         {
             if (pos - prev_pos > para_max)
             {
-                paraSplit(pos, false);
+                operatorParaSplit(pos, false);
             }
             prev_pos = pos;
         }
@@ -1774,9 +1765,126 @@ void NovelAI::TypesetPart(int start_pos, int end_pos)
 bool NovelAI::activeParaSplit(int x)
 {
     prepareAnalyze();
-    bool rst = paraSplit(x, true);
+    bool rst = operatorParaSplit(x, true);
     finishAnalyze();
     return rst;
+}
+
+/**
+ * 从上一个换行的位置判断到x位置
+ * 如果超过了一定的字数，则实行段落分割
+ * 不影响后面的操作
+ * @param x [description]
+ */
+bool NovelAI::operatorParaSplit(int x, bool indent)
+{
+    int max = us->para_max_length;
+    // 去除光标前的空白符，直接到上一个段落的最后一个位置
+    while (x > 0 && isBlankChar(_text.mid(x-1, 1)))
+        x--;
+    if (x <= max) return false;
+
+    int prev_pos = _text.lastIndexOf("\n", x-1) + 1;
+    while (prev_pos < x && isBlankChar(_text.mid(prev_pos, 1)))
+        prev_pos++;
+    QString para = _text.mid(prev_pos, x - prev_pos);
+    int len = getWordCount(para);
+    if (len < max) return false;
+    if (len == max && para.length() == max) // 不知道包不包括刚好到阈值，索性的来个判断吧
+        return false;
+
+    // ==== 段落分割各数值 ====
+    // 开始位置：start，结束位置：end，段落长度：len
+    // 长度上限：max，每段目标长度：aim
+    int start = prev_pos, end = x;
+    int estimate = (len+max-1) / max; // 预计分割段落数量
+    int aim = len / estimate;         // 每个子段的数量
+
+    // ==== 获取可以分割的位置（绝对位置） ====
+    QList<int>sps;
+    int quote_stack = 0; // 用来计算引号内的堆栈
+    sps.append(start);   // 初始化成0
+    for (int i = 0; i < len; i++)
+    {
+        QString c = _text.mid(i, 1);
+        if (c == "“") // 左引号开启
+            quote_stack++;
+        else if (c == "”" && quote_stack > 0) // 右引号关闭
+        {
+            quote_stack--;
+            if (i > 0 && isSentPunc(_text.mid(i-1, 1))) // 关闭时的段落。
+                sps.append(i+1);
+        }
+        else if (quote_stack > 0) ;
+        else if (isSentPunc(c)) // 。！？只有这些才算。
+        {
+            sps.append(i+1);
+        }
+    }
+
+    // ==== 通过累加计算判断分割的位置 ====
+    // 尽量将每个段落划分成为 aim 长度的子段落
+    // 并且坚决不超过 max（除非一句话就超过了）
+    QList<int>ss;
+    int sum = 0, size = sps.size(), number = 0;
+    for (int i = 1; i < size; i++)
+    {
+        number++;
+        sum += sps.at(i)-sps.at(i-1);
+        if (sum >= aim)
+        {
+            if (number == 1)
+            {
+                ss.append(sps.at(i));
+                sum = number = 0;
+                continue ;
+            }
+            // @number > 1
+            if (sum > max) // 超过了上限
+            {
+                if (sum - (sps.at(i)-sps.at(i-1)) < aim && sum < (sps.at(i)-sps.at(i-1))*1.2) // 前面的话实在是太短了，于是在这个位置分割
+                {
+                    ss.append(sps.at(i));
+                    sum = number = 0;
+                }
+                else // 加上这句话就超过了上限，在前面分割。
+                {
+                    ss.append(sps.at(i-1));
+                    sum = sps.at(i) - sps.at(i-1);
+                    number = 1;
+                }
+            }
+            else // 超过平均但是没有超过上限，分割
+            {
+                ss.append(sps.at(i));
+                sum = number = 1;
+            }
+        }
+    }
+
+    // 最后一个不分割
+    if (ss.size() > 0 && ss.at(ss.size()-1) == end)
+        ss.removeAt(ss.size()-1);
+
+    // ==== 初始化缩进内容 ====
+    QString insert = "\n";
+    if (indent)
+    {
+        QString new_blank, new_line;
+        int num_blank = us->indent_blank, num_line = us->indent_line;
+        while (num_blank--)
+            new_blank += "　";
+        while (num_line--)
+            new_line += "\n";
+        insert += new_line+new_blank;
+    }
+
+    // ==== 开始分割段落 ====
+    size = ss.size();
+    for (int i = size-1; i >= 0; --i) // 从后往前
+        insertText(ss.at(i), insert);
+
+    return true;
 }
 
 /**
@@ -1785,7 +1893,7 @@ bool NovelAI::activeParaSplit(int x)
  * @param end
  * @param word
  */
-void NovelAI::activeWordReplace(int start, int end, QString word)
+void NovelAI::operatorWordReplace(int start, int end, QString word)
 {
     prepareAnalyze();
     deleteText(start, end);
@@ -1794,7 +1902,7 @@ void NovelAI::activeWordReplace(int start, int end, QString word)
 }
 
 
-void NovelAI::ExpandSelection(int start, int end, int& callback_start, int& callback_end)
+void NovelAI::operatorExpandSelection(int start, int end, int& callback_start, int& callback_end)
 {
     _pos = _edit->textCursor().position();
 
@@ -1855,7 +1963,7 @@ void NovelAI::ExpandSelection(int start, int end, int& callback_start, int& call
 }
 
 
-void NovelAI::ShrinkSelection(int start, int end, int& callback_start, int& callback_end)
+void NovelAI::operatorShrinkSelection(int start, int end, int& callback_start, int& callback_end)
 {
     _pos = _edit->textCursor().position();
 
@@ -2250,7 +2358,7 @@ void NovelAI::scrollCursorFix()
     ; // 子类继承，固定光标所在行的位置
 }
 
-void NovelAI::cursorRealChanged(int pos)
+void NovelAI::cursorRealChanged(int)
 {
     ; // 子类继承，移动光标动画
 }
@@ -2344,17 +2452,17 @@ void NovelAI::textAnalyze()
     if (_dif == 1) { // 只相差一个字
         if (!isChinese(_left1)) { // 是标点
             if (us->punc_cover) { // 标点覆盖
-                if (PuncCover()) {
+                if (operatorPuncCover()) {
                     return finishAnalyze();
                 }
             }
             if (us->pair_match) { // 括号匹配
-                if (PairMatch()) {
+                if (operatorPairMatch()) {
                     return finishAnalyze();
                 }
             }
             if (us->pair_jump) { // 括号跳转
-                if (PairJump()) {
+                if (operatorPairJump()) {
                     return finishAnalyze();
                 }
             }
@@ -2363,12 +2471,12 @@ void NovelAI::textAnalyze()
 
     if (isChinese(_left1)) {
         if (us->auto_punc) { // 自动添加标点
-            if (AutoPunc()) {
+            if (operatorAutoPunc()) {
                 return finishAnalyze();
             }
         }
         if (us->homonym_cover) { // 同音词覆盖
-            if (HomonymCover(_pos, _dif)) {
+            if (operatorHomonymCover(_pos, _dif)) {
                 return finishAnalyze();
             }
         }
@@ -2424,7 +2532,7 @@ void NovelAI::finishAnalyze()
             input_manager->updateRect(edit_range_start, edit_range_end);
     }
 
-    _change_text = _change_text = false;
+    _change_text = _change_pos = false;
 }
 
 void NovelAI::moveCursor(int x)

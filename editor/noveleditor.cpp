@@ -528,7 +528,7 @@ void NovelEditor::slotOnCompleterActived(const QString &completion)
     if (start_pos < left) start_pos = left;
     int find_pos = text.indexOf(key, start_pos);
     if (find_pos == -1) return ;
-    activeWordReplace(find_pos, find_pos+key.length(), completion);
+    operatorWordReplace(find_pos, find_pos+key.length(), completion);
 
     surroundWordSearch();
 
@@ -929,6 +929,10 @@ void NovelEditor::keyPressEvent(QKeyEvent *event)
                     deleteWord(textCursor().position());
                 return ;
             }
+            else if (!ctrl && !shift && !alt)
+            {
+                operatorSmartDelete();
+            }
         }
         break;
     case Qt::Key_Tab : // tab补全、tab跳过
@@ -936,12 +940,12 @@ void NovelEditor::keyPressEvent(QKeyEvent *event)
         {
             if (us->tab_complete && us->tab_skip)
             {
-                activeTabSkip(activeTabComplete());
+                operatorTabSkip(operatorTabComplete());
                 return ;
             }
             if (us->tab_skip)
             {
-                activeTabSkip(false);
+                operatorTabSkip(false);
                 return ;
             }
         }
@@ -949,7 +953,7 @@ void NovelEditor::keyPressEvent(QKeyEvent *event)
         {
             if (us->tab_skip)
             {
-                activeReverseTabSkip();
+                operatorReverseTabSkip();
                 return ;
             }
         }
@@ -957,14 +961,14 @@ void NovelEditor::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Backtab : // shift + tab
         if (us->tab_skip)
         {
-            activeReverseTabSkip();
+            operatorReverseTabSkip();
             return ;
         }
         break;
     // ========== 快捷键 ===========
     case Qt::Key_T :
         if (ctrl) { // ctrl+T 排版 typography
-            Typeset();
+            operatorTypeset();
             return ;
         }
         break;
@@ -1259,7 +1263,7 @@ void NovelEditor::insertFromMimeData(const QMimeData *source)
         int end = start + context.length();
         QTextEdit::insertFromMimeData(source);
         if (context.indexOf("\n") > -1 && !isBlankString(context))
-            TypesetPart(start, end);
+            operatorTypesetPart(start, end);
         // typesetPaste(this->textCursor().position(), context);
     }
 

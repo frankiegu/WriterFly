@@ -14,7 +14,7 @@ NovelAIBase::~NovelAIBase()
  * 智能引号，根据语境自动添加各种形式的双引号
  * 尤其是有没有分号或者冒号
  */
-void NovelAIBase::SmartQuotes()
+void NovelAIBase::operatorSmartQuotes()
 {
     // 判断是否为人物的第二句话（即双引号前面是逗号而不是冒号）
     bool is_second_said = false;
@@ -336,7 +336,7 @@ void NovelAIBase::SmartQuotes()
  * @param left  选中的文字左边
  * @param right 选中的文字右边
  */
-void NovelAIBase::SmartQuotes2(int left, int right)
+void NovelAIBase::operatorSmartQuotes2(int left, int right)
 {
     // 确保左边小于右边
     if (left > right)
@@ -476,122 +476,7 @@ void NovelAIBase::SmartQuotes2(int left, int right)
     }
 }
 
-/**
- * 从上一个换行的位置判断到x位置
- * 如果超过了一定的字数，则实行段落分割
- * 不影响后面的操作
- * @param x [description]
- */
-bool NovelAIBase::paraSplit(int x, bool indent)
-{
-    int max = us->para_max_length;
-    // 去除光标前的空白符，直接到上一个段落的最后一个位置
-    while (x > 0 && isBlankChar(_text.mid(x-1, 1)))
-        x--;
-    if (x <= max) return false;
 
-    int prev_pos = _text.lastIndexOf("\n", x-1) + 1;
-    while (prev_pos < x && isBlankChar(_text.mid(prev_pos, 1)))
-        prev_pos++;
-    QString para = _text.mid(prev_pos, x - prev_pos);
-    int len = getWordCount(para);
-    if (len < max) return false;
-    if (len == max && para.length() == max) // 不知道包不包括刚好到阈值，索性的来个判断吧
-        return false;
-
-    // ==== 段落分割各数值 ====
-    // 开始位置：start，结束位置：end，段落长度：len
-    // 长度上限：max，每段目标长度：aim
-    int start = prev_pos, end = x;
-    int estimate = (len+max-1) / max; // 预计分割段落数量
-    int aim = len / estimate;         // 每个子段的数量
-
-    // ==== 获取可以分割的位置（绝对位置） ====
-    QList<int>sps;
-    int quote_stack = 0; // 用来计算引号内的堆栈
-    sps.append(start);   // 初始化成0
-    for (int i = 0; i < len; i++)
-    {
-        QString c = _text.mid(i, 1);
-        if (c == "“") // 左引号开启
-            quote_stack++;
-        else if (c == "”" && quote_stack > 0) // 右引号关闭
-        {
-            quote_stack--;
-            if (i > 0 && isSentPunc(_text.mid(i-1, 1))) // 关闭时的段落。
-                sps.append(i+1);
-        }
-        else if (quote_stack > 0) ;
-        else if (isSentPunc(c)) // 。！？只有这些才算。
-        {
-            sps.append(i+1);
-        }
-    }
-
-    // ==== 通过累加计算判断分割的位置 ====
-    // 尽量将每个段落划分成为 aim 长度的子段落
-    // 并且坚决不超过 max（除非一句话就超过了）
-    QList<int>ss;
-    int sum = 0, size = sps.size(), number = 0;
-    for (int i = 1; i < size; i++)
-    {
-        number++;
-        sum += sps.at(i)-sps.at(i-1);
-        if (sum >= aim)
-        {
-            if (number == 1)
-            {
-                ss.append(sps.at(i));
-                sum = number = 0;
-                continue ;
-            }
-            // @number > 1
-            if (sum > max) // 超过了上限
-            {
-                if (sum - (sps.at(i)-sps.at(i-1)) < aim && sum < (sps.at(i)-sps.at(i-1))*1.2) // 前面的话实在是太短了，于是在这个位置分割
-                {
-                    ss.append(sps.at(i));
-                    sum = number = 0;
-                }
-                else // 加上这句话就超过了上限，在前面分割。
-                {
-                    ss.append(sps.at(i-1));
-                    sum = sps.at(i) - sps.at(i-1);
-                    number = 1;
-                }
-            }
-            else // 超过平均但是没有超过上限，分割
-            {
-                ss.append(sps.at(i));
-                sum = number = 1;
-            }
-        }
-    }
-
-    // 最后一个不分割
-    if (ss.size() > 0 && ss.at(ss.size()-1) == end)
-        ss.removeAt(ss.size()-1);
-
-    // ==== 初始化缩进内容 ====
-    QString insert = "\n";
-    if (indent)
-    {
-        QString new_blank, new_line;
-        int num_blank = us->indent_blank, num_line = us->indent_line;
-        while (num_blank--)
-            new_blank += "　";
-        while (num_line--)
-            new_line += "\n";
-        insert += new_line+new_blank;
-    }
-
-    // ==== 开始分割段落 ====
-    size = ss.size();
-    for (int i = size-1; i >= 0; --i) // 从后往前
-        insertText(ss.at(i), insert);
-
-    return true;
-}
 
 int NovelAIBase::getWordCount(QString str)
 {
@@ -601,68 +486,8 @@ int NovelAIBase::getWordCount(QString str)
 /**
  * 智能删除：删除成对的标点（内部、右边）
  */
-void NovelAIBase::SmartBackspace()
+void NovelAIBase::operatorSmartBackspace()
 {
-    /*// 可能1：【|】
-    int l_pos = _symbol_pair_lefts.indexOf(_left1);
-    int r_pos = _symbol_pair_rights.indexOf(_right1);
-    // 可能2：【】|
-    int l_pos2 = _symbol_pair_lefts.indexOf(_left2);
-    int r_pos2 = _symbol_pair_rights.indexOf(_left1);
-
-    int nl_pos = _text.lastIndexOf("\n", _pos > 0 ? _pos - 1 : _pos);
-    int nr_pos = _text.indexOf("\n", _pos);
-    if (nl_pos == -1) nl_pos = 0;
-    if (nr_pos == -1) nr_pos = _text.length();
-    QString para = _text.mid(nl_pos + 1, nr_pos - nl_pos - 1); // 段落文本，用来判断括号堆栈
-    int para_pos = _pos - nl_pos - 1;                     // 光标相对于段落的位置
-
-    if (l_pos > -1 && l_pos == r_pos) // 【|】
-    {
-        // 左边括号多余的数量
-        int l_count = 0;
-        for (int i = 0; i < para_pos; i++)
-            if (para.mid(i, 1) == _left1)
-                l_count++;
-            else if (para.mid(i, 1) == _right1)
-                l_count--;
-
-        // 右边括号剩余的数量
-        int r_count = 0, len = para.length();
-        for (int i = para_pos; i < len; i++)
-            if (para.mid(i, 1) == _left1)
-                r_count--;
-            else if (para.mid(i, 1) == _right1)
-                r_count++;
-        if (r_count >= l_count) // 这个段落右括号的数量比左括号多，或者数量一样，则一起删除
-            deleteText(_pos - 1, _pos + 1);
-        else
-            deleteText(_pos - 1, _pos);
-    }
-    else if (l_pos2 > -1 && l_pos2 == r_pos2) // 【】|
-    {
-        // 左边括号多余的数量
-        int l_count = 0;
-        for (int i = 0; i < para_pos - 1; i++)
-            if (para.mid(i, 1) == _left1)
-                l_count++;
-            else if (para.mid(i, 1) == _right1)
-                l_count--;
-
-        // 右边括号剩余的数量
-        int r_count = 0, len = para.length();
-        for (int i = para_pos - 1; i < len; i++)
-            if (para.mid(i, 1) == _left1)
-                r_count--;
-            else if (para.mid(i, 1) == _right1)
-                r_count++;
-
-        if (r_count >= l_count) // 这个段落右括号的数量比左括号多，或者数量一样，则一起删除
-            deleteText(_pos - 2, _pos);
-        else
-            deleteText(_pos - 1, _pos);
-    }*/
-
     if (canDeletePairPunc()) ;
     else if (_left1 == _left2 && _left2 != _left3 && !isChinese(_left1) && _left1 != "\n") // 连续的字符
     {
@@ -679,7 +504,7 @@ void NovelAIBase::SmartBackspace()
  * 标点的左右移动光标到右边；
  * 消除自动添加的双引号
  */
-void NovelAIBase::SmartSpace()
+void NovelAIBase::operatorSmartSpace()
 {
     if (_left1 == "" || _left1 == "\n")   // 增加缩进
     {
@@ -799,7 +624,7 @@ void NovelAIBase::SmartSpace()
  * 跳过双引号的右半部分；
  * 双引号里面句子换行则自动补全双引号
  */
-void NovelAIBase::SmartEnter()
+void NovelAIBase::operatorSmartEnter()
 {
     bool blank_line_cut = false; // 空行后面暂时减少一行
 
@@ -923,7 +748,7 @@ QString NovelAIBase::getCursorFrontSent()
  * 在说话或者语气词后面自动添加标点
  * @return 是否自动添加
  */
-bool NovelAIBase::AutoPunc()
+bool NovelAIBase::operatorAutoPunc()
 {
     //if (isChinese(_left1)) return false; // 运行时已经判断了，可注释掉
     if (_auto_punc_whitelists.indexOf(_left1) == -1) return false;
@@ -937,19 +762,19 @@ bool NovelAIBase::AutoPunc()
         if (sent.indexOf("看") > -1 && sent.indexOf("看着") == -1) // 黑名单外的特殊判断
         	return false;
         if (_text.lastIndexOf("“", _pos) > _text.lastIndexOf("”", _pos) && _text.lastIndexOf("“", _pos) > _text.lastIndexOf("\n", _pos)) return false; // 不在引号(同一段)外面
-        SmartQuotes();
+        operatorSmartQuotes();
     }
     else if (_left1 == "道")
     {
         if (_dao_whitelists.indexOf(_left2) == -1 || isInQuotes) return false;
         if (_text.lastIndexOf("“", _pos) > _text.lastIndexOf("”", _pos) && _text.lastIndexOf("“", _pos) > _text.lastIndexOf("\n", _pos)) return false;
-        SmartQuotes();
+        operatorSmartQuotes();
     }
     else if (_left1 == "问")
     {
         if (_wen_blacklists.indexOf(_left2) == -1 || isInQuotes) return false;
         if (_text.lastIndexOf("“", _pos) > _text.lastIndexOf("”", _pos) && _text.lastIndexOf("“", _pos) > _text.lastIndexOf("\n", _pos)) return false;
-        SmartQuotes();
+        operatorSmartQuotes();
     }
     else if (_left1 == "么")
     {
@@ -1003,7 +828,7 @@ bool NovelAIBase::AutoPunc()
     return true;
 }
 
-bool NovelAIBase::SentFinish()
+bool NovelAIBase::operatorSentFinish()
 {
     if (isSentSplit(_left1) && _left1 != "，") return false; // 除了逗号以外的
     if (isSentPunc(_right1)) return false; // 标点（不包括逗号）
