@@ -31,6 +31,7 @@ private:
     void initWindow();
     void initData();
     void initFirstOpen();
+    void refreshAppPath();
     void toastPlatform();
 
 public slots:

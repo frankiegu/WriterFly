@@ -11,7 +11,7 @@
 #include "runtimeinfo.h"
 
 QString APPLICATION_NAME = "写作天下";
-QString VERSION_NUMBER = "v0.6.2";
+QString VERSION_NUMBER = "v0.6.3";
 
 USettings* us;
 RuntimeInfo* rt;

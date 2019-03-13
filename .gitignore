@@ -1,0 +1,13 @@
+Run
+RunAndroid
+RunAndroidx86
+.tags
+.tags_sorted_by_file
+*.user
+*.[oa]
+moc_*
+debug
+release
+run
+.keystore
+keys
