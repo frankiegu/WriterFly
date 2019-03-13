@@ -134,6 +134,8 @@ void UserSettingsWindow::initItems()
     hideItem();
     addItems("completer_input_delay", "输入文字提示延时", "输入文字后显示词典提示框的延迟时长（毫秒）", "不建议太长，可能会挡住中文输入法的输入框", us->completer_input_delay);
     hideItem();
+    addItems("insert_sentence", "直接插入句子", "在选中句子后，直接插入到光标处而不是复制到剪贴板", "默认关闭，尽量避免抄袭操作", us->insert_sentence);
+    hideItem();
     addSplitter();
 
     /* ==== 交互 ==== */
@@ -846,6 +848,13 @@ void UserSettingsWindow::slotItemClicked(UserSettingsItem* item, QString key)
     else if (key == "completer_random")
     {
         bool& b = us->completer_random;
+        b = !b;
+        us->setVal(QString("us/%1").arg(key), b);
+        item->setVal(b);
+    }
+    else if (key == "insert_sentence")
+    {
+        bool& b = us->insert_sentence;
         b = !b;
         us->setVal(QString("us/%1").arg(key), b);
         item->setVal(b);
