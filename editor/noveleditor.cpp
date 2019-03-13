@@ -432,6 +432,50 @@ void NovelEditor::closeCompleteTimerOnce()
     completer_timer_timeout = true;
 }
 
+void NovelEditor::operatorHomeKey()
+{
+    QString text = toPlainText();
+    QTextCursor cursor = textCursor();
+    int ori_pos = cursor.position();
+    int len = text.length();
+    bool block_start = false;  // 行首（真正没有空字符的开头）
+    bool blank_start = false; // 段落开头（段落空字符开头）
+
+    // 判断当前光标前面是不是空行或者空字符串
+    if (ori_pos == 0 || text.mid(ori_pos-1, 1) == "\n")
+        block_start = true;
+
+    // 是否是段落
+    int temp_pos = ori_pos;
+    while (temp_pos > 0 && isBlankChar2(text.mid(temp_pos-1, 1)))
+        temp_pos--;
+    if (temp_pos == 0 || text.mid(temp_pos-1, 1) == "\n")
+        blank_start = true;
+
+    // 移动到开头
+    cursor.movePosition(QTextCursor::StartOfLine);
+
+    // 如果本来就在行首，则移动到后面非空白符的位置
+    if (!blank_start || block_start)
+    {
+        int pos = cursor.position();
+        while (pos < len && isBlankChar2(text.mid(pos, 1)))
+            pos++;
+        cursor.setPosition(pos);
+    }
+    if (cursor.position() == ori_pos) // 位置没变，表示本身就是开头
+    {
+        int temp_pos = cursor.position();
+        while (temp_pos > 0 && text.mid(temp_pos-1, 1) != "\n")
+            temp_pos--;
+        while (temp_pos < len && isBlankChar2(text.mid(temp_pos, 1)))
+            temp_pos++;
+        cursor.setPosition(temp_pos);
+    }
+
+    setTextCursor(cursor);
+}
+
 void NovelEditor::slotCompleterShowed()
 {
     if (!completer_timer_timeout)
@@ -765,6 +809,8 @@ void NovelEditor::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_Home :
         _flag_user_change_cursor = true;
+        operatorHomeKey();
+        return ;
         break;
     case Qt::Key_End :
         _flag_user_change_cursor = true;

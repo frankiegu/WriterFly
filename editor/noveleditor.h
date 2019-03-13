@@ -61,6 +61,9 @@ public:
     void surroundWordSearch();
     void closeCompleteTimerOnce();
 
+protected:
+    void operatorHomeKey();
+
 signals:
     void signalWordCount(int x);
     void signalUpdateAllEditor();
