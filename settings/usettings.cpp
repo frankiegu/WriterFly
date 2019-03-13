@@ -88,6 +88,7 @@ void USettings::loadFromFile()
     completer_cursor_delay  = getInt("us/completer_cursor_delay", 1000);
     completer_maxnum        = getInt("us/completer_maxnum", 7);
     completer_random        = getBool("us/completer_random", true);
+    insert_sentence         = getBool("us/insert_sentence", false);
 
 }
 

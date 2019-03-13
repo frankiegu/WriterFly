@@ -52,7 +52,7 @@ public:
     bool    scroll_bottom_fixed;     // 末尾固定位置
     bool    scroll_suspension;       // 悬浮滚动
     bool    cursor_animation;        // 光标移动动画
-    bool    input_animation;         // 输入谁否陈动画
+    bool    input_animation;         // 输入文字动画
 
     /* ==== 数据 ==== */
     bool    save_power;              // 强力保存：每写一个字就进行保存
@@ -94,6 +94,7 @@ public:
     int     completer_cursor_delay;  // 移动后提示延时
     int     completer_maxnum;        // 自动提示最大显示项数
     bool    completer_random;        // 词典乱序显示
+    bool    insert_sentence;         // 句子是否直接插入而不复制
 
 
     /* ==== 常量 ==== */

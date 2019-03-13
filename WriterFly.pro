@@ -31,7 +31,8 @@ INCLUDEPATH += dirlayout\
     im_ex_port\
     threads\
     globals\
-    network
+    network\
+    tools
 
 
 SOURCES += main.cpp\
@@ -170,8 +171,8 @@ RESOURCES += \
     resources.qrc
 
 #Qt5.6.1版的
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/./ -lFrisoLib
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/./ -lFrisoLibd
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/tools/friso/ -lFrisoLib
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/tools/friso/ -lFrisoLibd
 else:unix: #LIBS += -L$$PWD/./ -lFrisoLib
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android

@@ -7,8 +7,8 @@
 #include <QDir>
 #include <QApplication>
 extern "C" {
-    #include "friso\src\friso.h"
-    #include "friso\src\friso_API.h"
+    #include "tools\friso\src\friso.h"
+    #include "tools\friso\src\friso_API.h"
 }
 
 class FrisoUtil

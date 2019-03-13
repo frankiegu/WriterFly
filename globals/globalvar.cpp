@@ -71,7 +71,7 @@ void deleteGlobal()
 
 /**
  * 毫秒级获取时间戳
- * @return
+ * @return 时间戳
  */
 qint64 getTimestamp()
 {
